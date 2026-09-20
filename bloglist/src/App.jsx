@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import {
   BrowserRouter as Router,
   Routes,
@@ -16,6 +16,7 @@ import useNotificationStore from './stores/notificationStore'
 import useBlogStore from './stores/blogStore'
 import useUserStore from './stores/userStore'
 import persistentUser from './services/persistentUser'
+import { useField } from './hooks'
 
 const Navigation = styled.nav`
   background: #333;
@@ -92,8 +93,8 @@ const Button = styled.button`
 `
 
 const App = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const username = useField('text')
+  const password = useField('password')
 
   const notification = useNotificationStore(
     state => state.notification
@@ -154,8 +155,8 @@ const App = () => {
       const response = await axios.post(
         '/api/login',
         {
-          username,
-          password
+          username: username.value,
+          password: password.value
         }
       )
 
@@ -164,8 +165,9 @@ const App = () => {
       persistentUser.saveUser(loggedUser)
 
       setUser(loggedUser)
-      setUsername('')
-      setPassword('')
+
+      username.reset()
+      password.reset()
 
       setNotification(
         `Welcome ${
@@ -300,14 +302,8 @@ const App = () => {
           <FormRow>
             <Label>
               username
-
               <Input
-                value={username}
-                onChange={({ target }) =>
-                  setUsername(
-                    target.value
-                  )
-                }
+                {...username.inputProps}
               />
             </Label>
           </FormRow>
@@ -315,15 +311,8 @@ const App = () => {
           <FormRow>
             <Label>
               password
-
               <Input
-                type="password"
-                value={password}
-                onChange={({ target }) =>
-                  setPassword(
-                    target.value
-                  )
-                }
+                {...password.inputProps}
               />
             </Label>
           </FormRow>
