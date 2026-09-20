@@ -1,18 +1,19 @@
-import useNotificationStore from './stores/notificationStore'
 import { useState, useEffect } from 'react'
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Link,
-  Navigate,
+  Navigate
 } from 'react-router-dom'
 import styled from 'styled-components'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import BlogView from './components/BlogView'
-import blogService from './services/blogs'
 import axios from 'axios'
+
+import useNotificationStore from './stores/notificationStore'
+import useBlogStore from './stores/blogStore'
 
 const Navigation = styled.nav`
   background: #333;
@@ -89,129 +90,158 @@ const Button = styled.button`
 `
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  useEffect(() => {
-    blogService.getAll().then((blogs) => {
-      setBlogs(blogs)
-    })
-  }, [])
+  const notification = useNotificationStore(
+    state => state.notification
+  )
+
+  const setNotification = useNotificationStore(
+    state => state.setNotification
+  )
+
+  const blogs = useBlogStore(
+    state => state.blogs
+  )
+
+  const initializeBlogs = useBlogStore(
+    state => state.initialize
+  )
+
+  const createBlog = useBlogStore(
+    state => state.createBlog
+  )
+
+  const updateBlog = useBlogStore(
+    state => state.updateBlog
+  )
+
+  const removeBlog = useBlogStore(
+    state => state.removeBlog
+  )
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
+    initializeBlogs()
+  }, [initializeBlogs])
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem(
+      'loggedBloglistUser'
+    )
 
     if (loggedUserJSON) {
       setUser(JSON.parse(loggedUserJSON))
     }
   }, [])
 
-  const notification = useNotificationStore(
-  state => state.notification
-)
-
-const setNotification = useNotificationStore(
-  state => state.setNotification
-)
-  const handleLogin = async (event) => {
+  const handleLogin = async event => {
     event.preventDefault()
 
     try {
       const response = await axios.post('/api/login', {
         username,
-        password,
+        password
       })
 
       const loggedUser = response.data
 
       window.localStorage.setItem(
         'loggedBloglistUser',
-        JSON.stringify(loggedUser),
+        JSON.stringify(loggedUser)
       )
 
       setUser(loggedUser)
       setUsername('')
       setPassword('')
 
-      setNotification('...', 'success')
+      setNotification(
+        `Welcome ${loggedUser.name || loggedUser.username}`,
+        'success'
+      )
     } catch {
-      setNotification({
-        message: 'Wrong username or password',
-        type: 'error',
-      })
+      setNotification(
+        'Wrong username or password',
+        'error'
+      )
     }
   }
 
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedBloglistUser')
+    window.localStorage.removeItem(
+      'loggedBloglistUser'
+    )
+
     setUser(null)
 
-    setNotification({
-      message: 'Logged out successfully',
-      type: 'success',
-    })
+    setNotification(
+      'Logged out successfully',
+      'success'
+    )
   }
 
-  const handleCreateBlog = async (blog) => {
+  const handleCreateBlog = async blog => {
     try {
-      const createdBlog = await blogService.create(blog, user.token)
+      const createdBlog = await createBlog(
+        blog,
+        user.token
+      )
 
-      setBlogs(blogs.concat(createdBlog))
-
-      setNotification({
-        message: `a new blog ${createdBlog.title} added`,
-        type: 'success',
-      })
+      setNotification(
+        `a new blog ${createdBlog.title} added`,
+        'success'
+      )
 
       return createdBlog
     } catch {
-      setNotification({
-        message: 'Adding the blog failed',
-        type: 'error',
-      })
+      setNotification(
+        'Adding the blog failed',
+        'error'
+      )
 
       throw new Error('Adding blog failed')
     }
   }
 
-  const handleUpdateBlog = async (updatedBlog, id) => {
+  const handleUpdateBlog = async (
+    updatedBlog,
+    id
+  ) => {
     try {
-      const returnedBlog = await blogService.update(id, updatedBlog, user.token)
-
-      setBlogs(
-        blogs.map((blog) =>
-          blog.id === returnedBlog.id ? returnedBlog : blog,
-        ),
+      const returnedBlog = await updateBlog(
+        id,
+        updatedBlog,
+        user.token
       )
 
       return returnedBlog
     } catch {
-      setNotification({
-        message: 'Updating the blog failed',
-        type: 'error',
-      })
+      setNotification(
+        'Updating the blog failed',
+        'error'
+      )
 
       throw new Error('Updating blog failed')
     }
   }
 
-  const handleRemoveBlog = async (id) => {
+  const handleRemoveBlog = async id => {
     try {
-      await blogService.remove(id, user.token)
+      await removeBlog(
+        id,
+        user.token
+      )
 
-      setBlogs(blogs.filter((blog) => blog.id !== id))
-
-      setNotification({
-        message: 'Blog removed successfully',
-        type: 'success',
-      })
+      setNotification(
+        'Blog removed successfully',
+        'success'
+      )
     } catch {
-      setNotification({
-        message: 'Removing the blog failed',
-        type: 'error',
-      })
+      setNotification(
+        'Removing the blog failed',
+        'error'
+      )
 
       throw new Error('Removing blog failed')
     }
@@ -224,8 +254,11 @@ const setNotification = useNotificationStore(
       {blogs
         .slice()
         .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog key={blog.id} blog={blog} />
+        .map(blog => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+          />
         ))}
     </div>
   )
@@ -243,9 +276,12 @@ const setNotification = useNotificationStore(
           <FormRow>
             <Label>
               username
+
               <Input
                 value={username}
-                onChange={({ target }) => setUsername(target.value)}
+                onChange={({ target }) =>
+                  setUsername(target.value)
+                }
               />
             </Label>
           </FormRow>
@@ -253,15 +289,20 @@ const setNotification = useNotificationStore(
           <FormRow>
             <Label>
               password
+
               <Input
                 type="password"
                 value={password}
-                onChange={({ target }) => setPassword(target.value)}
+                onChange={({ target }) =>
+                  setPassword(target.value)
+                }
               />
             </Label>
           </FormRow>
 
-          <Button type="submit">login</Button>
+          <Button type="submit">
+            login
+          </Button>
         </form>
       </LoginForm>
     )
@@ -272,36 +313,65 @@ const setNotification = useNotificationStore(
       return <Navigate to="/login" />
     }
 
-    return <BlogForm createBlog={handleCreateBlog} />
+    return (
+      <BlogForm
+        createBlog={handleCreateBlog}
+      />
+    )
   }
 
   return (
     <Router>
       <div>
         <Navigation>
-          <Link to="/">blogs</Link>
+          <Link to="/">
+            blogs
+          </Link>
 
-          {!user && <Link to="/login">login</Link>}
+          {!user && (
+            <Link to="/login">
+              login
+            </Link>
+          )}
 
           {user && (
             <>
-              <Link to="/create">create</Link>
+              <Link to="/create">
+                create
+              </Link>
 
-              <UserInfo>{user.name || user.username} logged in</UserInfo>
+              <UserInfo>
+                {user.name || user.username} logged in
+              </UserInfo>
 
-              <button onClick={handleLogout}>logout</button>
+              <button onClick={handleLogout}>
+                logout
+              </button>
             </>
           )}
         </Navigation>
 
-        {notification && <Notification>{notification.message}</Notification>}
+        {notification && (
+          <Notification>
+            {notification.message}
+          </Notification>
+        )}
 
         <Routes>
-          <Route path="/" element={<Blogs />} />
+          <Route
+            path="/"
+            element={<Blogs />}
+          />
 
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/login"
+            element={<Login />}
+          />
 
-          <Route path="/create" element={<Create />} />
+          <Route
+            path="/create"
+            element={<Create />}
+          />
 
           <Route
             path="/blogs/:id"
@@ -315,7 +385,10 @@ const setNotification = useNotificationStore(
             }
           />
 
-          <Route path="*" element={<h2>Page not found</h2>} />
+          <Route
+            path="*"
+            element={<h2>Page not found</h2>}
+          />
         </Routes>
       </div>
     </Router>
