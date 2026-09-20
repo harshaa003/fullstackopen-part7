@@ -118,6 +118,10 @@ const App = () => {
     state => state.updateBlog
   )
 
+  const likeBlog = useBlogStore(
+    state => state.likeBlog
+  )
+
   const removeBlog = useBlogStore(
     state => state.removeBlog
   )
@@ -139,9 +143,10 @@ const App = () => {
   }, [initializeBlogs])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem(
-      'loggedBloglistUser'
-    )
+    const loggedUserJSON =
+      window.localStorage.getItem(
+        'loggedBloglistUser'
+      )
 
     if (loggedUserJSON) {
       setUser(JSON.parse(loggedUserJSON))
@@ -152,10 +157,13 @@ const App = () => {
     event.preventDefault()
 
     try {
-      const response = await axios.post('/api/login', {
-        username,
-        password
-      })
+      const response = await axios.post(
+        '/api/login',
+        {
+          username,
+          password
+        }
+      )
 
       const loggedUser = response.data
 
@@ -169,7 +177,10 @@ const App = () => {
       setPassword('')
 
       setNotification(
-        `Welcome ${loggedUser.name || loggedUser.username}`,
+        `Welcome ${
+          loggedUser.name ||
+          loggedUser.username
+        }`,
         'success'
       )
     } catch {
@@ -195,10 +206,11 @@ const App = () => {
 
   const handleCreateBlog = async blog => {
     try {
-      const createdBlog = await createBlog(
-        blog,
-        user.token
-      )
+      const createdBlog =
+        await createBlog(
+          blog,
+          user.token
+        )
 
       setNotification(
         `a new blog ${createdBlog.title} added`,
@@ -212,7 +224,9 @@ const App = () => {
         'error'
       )
 
-      throw new Error('Adding blog failed')
+      throw new Error(
+        'Adding blog failed'
+      )
     }
   }
 
@@ -221,11 +235,12 @@ const App = () => {
     id
   ) => {
     try {
-      const returnedBlog = await updateBlog(
-        id,
-        updatedBlog,
-        user.token
-      )
+      const returnedBlog =
+        await updateBlog(
+          id,
+          updatedBlog,
+          user.token
+        )
 
       return returnedBlog
     } catch {
@@ -234,7 +249,24 @@ const App = () => {
         'error'
       )
 
-      throw new Error('Updating blog failed')
+      throw new Error(
+        'Updating blog failed'
+      )
+    }
+  }
+
+  const handleLikeBlog = async blog => {
+    try {
+      await likeBlog(
+        blog.id,
+        blog,
+        user.token
+      )
+    } catch {
+      setNotification(
+        'Liking the blog failed',
+        'error'
+      )
     }
   }
 
@@ -255,7 +287,9 @@ const App = () => {
         'error'
       )
 
-      throw new Error('Removing blog failed')
+      throw new Error(
+        'Removing blog failed'
+      )
     }
   }
 
@@ -265,11 +299,14 @@ const App = () => {
 
       {blogs
         .slice()
-        .sort((a, b) => b.likes - a.likes)
+        .sort(
+          (a, b) => b.likes - a.likes
+        )
         .map(blog => (
           <Blog
             key={blog.id}
             blog={blog}
+            likeBlog={handleLikeBlog}
           />
         ))}
     </div>
@@ -282,7 +319,9 @@ const App = () => {
 
     return (
       <LoginForm>
-        <h2>Log in to application</h2>
+        <h2>
+          Log in to application
+        </h2>
 
         <form onSubmit={handleLogin}>
           <FormRow>
@@ -292,7 +331,9 @@ const App = () => {
               <Input
                 value={username}
                 onChange={({ target }) =>
-                  setUsername(target.value)
+                  setUsername(
+                    target.value
+                  )
                 }
               />
             </Label>
@@ -306,7 +347,9 @@ const App = () => {
                 type="password"
                 value={password}
                 onChange={({ target }) =>
-                  setPassword(target.value)
+                  setPassword(
+                    target.value
+                  )
                 }
               />
             </Label>
@@ -322,7 +365,9 @@ const App = () => {
 
   const Create = () => {
     if (!user) {
-      return <Navigate to="/login" />
+      return (
+        <Navigate to="/login" />
+      )
     }
 
     return (
@@ -353,10 +398,14 @@ const App = () => {
               </Link>
 
               <UserInfo>
-                {user.name || user.username} logged in
+                {user.name ||
+                  user.username}{' '}
+                logged in
               </UserInfo>
 
-              <button onClick={handleLogout}>
+              <button
+                onClick={handleLogout}
+              >
                 logout
               </button>
             </>
@@ -391,15 +440,23 @@ const App = () => {
               <BlogView
                 blogs={blogs}
                 user={user}
-                updateBlog={handleUpdateBlog}
-                removeBlog={handleRemoveBlog}
+                updateBlog={
+                  handleUpdateBlog
+                }
+                removeBlog={
+                  handleRemoveBlog
+                }
               />
             }
           />
 
           <Route
             path="*"
-            element={<h2>Page not found</h2>}
+            element={
+              <h2>
+                Page not found
+              </h2>
+            }
           />
         </Routes>
       </div>
