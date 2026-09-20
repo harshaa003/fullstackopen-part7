@@ -10,6 +10,7 @@ import styled from 'styled-components'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import BlogView from './components/BlogView'
+import UserView from './components/UserView'
 import axios from 'axios'
 
 import useNotificationStore from './stores/notificationStore'
@@ -123,6 +124,7 @@ const Users = () => {
                   {user.name || user.username}
                 </Link>
               </td>
+
               <td>
                 {user.blogs.length}
               </td>
@@ -344,6 +346,7 @@ const App = () => {
           <FormRow>
             <Label>
               username
+
               <Input
                 {...username.inputProps}
               />
@@ -353,6 +356,7 @@ const App = () => {
           <FormRow>
             <Label>
               password
+
               <Input
                 {...password.inputProps}
               />
@@ -435,6 +439,11 @@ const App = () => {
           <Route
             path="/users"
             element={<Users />}
+          />
+
+          <Route
+            path="/users/:id"
+            element={<UserView />}
           />
 
           <Route
