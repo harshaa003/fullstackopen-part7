@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import {
   BrowserRouter as Router,
   Routes,
@@ -91,6 +91,48 @@ const Button = styled.button`
   cursor: pointer;
   font-size: 15px;
 `
+
+const Users = () => {
+  const [users, setUsers] = useState([])
+
+  useEffect(() => {
+    axios
+      .get('/api/users')
+      .then(response => {
+        setUsers(response.data)
+      })
+  }, [])
+
+  return (
+    <div>
+      <h2>Users</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Blogs created</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {users.map(user => (
+            <tr key={user.id}>
+              <td>
+                <Link to={`/users/${user.id}`}>
+                  {user.name || user.username}
+                </Link>
+              </td>
+              <td>
+                {user.blogs.length}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
 
 const App = () => {
   const username = useField('text')
@@ -347,6 +389,10 @@ const App = () => {
             blogs
           </Link>
 
+          <Link to="/users">
+            users
+          </Link>
+
           {!user && (
             <Link to="/login">
               login
@@ -384,6 +430,11 @@ const App = () => {
           <Route
             path="/"
             element={<Blogs />}
+          />
+
+          <Route
+            path="/users"
+            element={<Users />}
           />
 
           <Route
