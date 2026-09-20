@@ -15,6 +15,7 @@ import axios from 'axios'
 import useNotificationStore from './stores/notificationStore'
 import useBlogStore from './stores/blogStore'
 import useUserStore from './stores/userStore'
+import persistentUser from './services/persistentUser'
 
 const Navigation = styled.nav`
   background: #333;
@@ -118,10 +119,6 @@ const App = () => {
     state => state.updateBlog
   )
 
-  const likeBlog = useBlogStore(
-    state => state.likeBlog
-  )
-
   const removeBlog = useBlogStore(
     state => state.removeBlog
   )
@@ -143,13 +140,10 @@ const App = () => {
   }, [initializeBlogs])
 
   useEffect(() => {
-    const loggedUserJSON =
-      window.localStorage.getItem(
-        'loggedBloglistUser'
-      )
+    const savedUser = persistentUser.getUser()
 
-    if (loggedUserJSON) {
-      setUser(JSON.parse(loggedUserJSON))
+    if (savedUser) {
+      setUser(savedUser)
     }
   }, [setUser])
 
@@ -167,10 +161,7 @@ const App = () => {
 
       const loggedUser = response.data
 
-      window.localStorage.setItem(
-        'loggedBloglistUser',
-        JSON.stringify(loggedUser)
-      )
+      persistentUser.saveUser(loggedUser)
 
       setUser(loggedUser)
       setUsername('')
@@ -192,9 +183,7 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    window.localStorage.removeItem(
-      'loggedBloglistUser'
-    )
+    persistentUser.removeUser()
 
     clearUser()
 
@@ -255,21 +244,6 @@ const App = () => {
     }
   }
 
-  const handleLikeBlog = async blog => {
-    try {
-      await likeBlog(
-        blog.id,
-        blog,
-        user.token
-      )
-    } catch {
-      setNotification(
-        'Liking the blog failed',
-        'error'
-      )
-    }
-  }
-
   const handleRemoveBlog = async id => {
     try {
       await removeBlog(
@@ -306,7 +280,6 @@ const App = () => {
           <Blog
             key={blog.id}
             blog={blog}
-            likeBlog={handleLikeBlog}
           />
         ))}
     </div>
