@@ -4,7 +4,7 @@ import {
   Routes,
   Route,
   Link,
-  Navigate
+  Navigate,
 } from 'react-router-dom'
 import styled from 'styled-components'
 import Blog from './components/Blog'
@@ -95,15 +95,13 @@ const App = () => {
   const [notification, setNotification] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then(blogs => {
+    blogService.getAll().then((blogs) => {
       setBlogs(blogs)
     })
   }, [])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem(
-      'loggedBloglistUser'
-    )
+    const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
 
     if (loggedUserJSON) {
       setUser(JSON.parse(loggedUserJSON))
@@ -120,20 +118,20 @@ const App = () => {
     }
   }, [notification])
 
-  const handleLogin = async event => {
+  const handleLogin = async (event) => {
     event.preventDefault()
 
     try {
       const response = await axios.post('/api/login', {
         username,
-        password
+        password,
       })
 
       const loggedUser = response.data
 
       window.localStorage.setItem(
         'loggedBloglistUser',
-        JSON.stringify(loggedUser)
+        JSON.stringify(loggedUser),
       )
 
       setUser(loggedUser)
@@ -142,12 +140,12 @@ const App = () => {
 
       setNotification({
         message: `Welcome ${loggedUser.name || loggedUser.username}`,
-        type: 'success'
+        type: 'success',
       })
     } catch {
       setNotification({
         message: 'Wrong username or password',
-        type: 'error'
+        type: 'error',
       })
     }
   }
@@ -158,29 +156,26 @@ const App = () => {
 
     setNotification({
       message: 'Logged out successfully',
-      type: 'success'
+      type: 'success',
     })
   }
 
-  const handleCreateBlog = async blog => {
+  const handleCreateBlog = async (blog) => {
     try {
-      const createdBlog = await blogService.create(
-        blog,
-        user.token
-      )
+      const createdBlog = await blogService.create(blog, user.token)
 
       setBlogs(blogs.concat(createdBlog))
 
       setNotification({
         message: `a new blog ${createdBlog.title} added`,
-        type: 'success'
+        type: 'success',
       })
 
       return createdBlog
     } catch {
       setNotification({
         message: 'Adding the blog failed',
-        type: 'error'
+        type: 'error',
       })
 
       throw new Error('Adding blog failed')
@@ -189,45 +184,39 @@ const App = () => {
 
   const handleUpdateBlog = async (updatedBlog, id) => {
     try {
-      const returnedBlog = await blogService.update(
-        id,
-        updatedBlog,
-        user.token
-      )
+      const returnedBlog = await blogService.update(id, updatedBlog, user.token)
 
       setBlogs(
-        blogs.map(blog =>
-          blog.id === returnedBlog.id ? returnedBlog : blog
-        )
+        blogs.map((blog) =>
+          blog.id === returnedBlog.id ? returnedBlog : blog,
+        ),
       )
 
       return returnedBlog
     } catch {
       setNotification({
         message: 'Updating the blog failed',
-        type: 'error'
+        type: 'error',
       })
 
       throw new Error('Updating blog failed')
     }
   }
 
-  const handleRemoveBlog = async id => {
+  const handleRemoveBlog = async (id) => {
     try {
       await blogService.remove(id, user.token)
 
-      setBlogs(
-        blogs.filter(blog => blog.id !== id)
-      )
+      setBlogs(blogs.filter((blog) => blog.id !== id))
 
       setNotification({
         message: 'Blog removed successfully',
-        type: 'success'
+        type: 'success',
       })
     } catch {
       setNotification({
         message: 'Removing the blog failed',
-        type: 'error'
+        type: 'error',
       })
 
       throw new Error('Removing blog failed')
@@ -241,11 +230,8 @@ const App = () => {
       {blogs
         .slice()
         .sort((a, b) => b.likes - a.likes)
-        .map(blog => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-          />
+        .map((blog) => (
+          <Blog key={blog.id} blog={blog} />
         ))}
     </div>
   )
@@ -265,9 +251,7 @@ const App = () => {
               username
               <Input
                 value={username}
-                onChange={({ target }) =>
-                  setUsername(target.value)
-                }
+                onChange={({ target }) => setUsername(target.value)}
               />
             </Label>
           </FormRow>
@@ -278,16 +262,12 @@ const App = () => {
               <Input
                 type="password"
                 value={password}
-                onChange={({ target }) =>
-                  setPassword(target.value)
-                }
+                onChange={({ target }) => setPassword(target.value)}
               />
             </Label>
           </FormRow>
 
-          <Button type="submit">
-            login
-          </Button>
+          <Button type="submit">login</Button>
         </form>
       </LoginForm>
     )
@@ -298,11 +278,7 @@ const App = () => {
       return <Navigate to="/login" />
     }
 
-    return (
-      <BlogForm
-        createBlog={handleCreateBlog}
-      />
-    )
+    return <BlogForm createBlog={handleCreateBlog} />
   }
 
   return (
@@ -311,46 +287,27 @@ const App = () => {
         <Navigation>
           <Link to="/">blogs</Link>
 
-          {!user && (
-            <Link to="/login">login</Link>
-          )}
+          {!user && <Link to="/login">login</Link>}
 
           {user && (
             <>
               <Link to="/create">create</Link>
 
-              <UserInfo>
-                {user.name || user.username} logged in
-              </UserInfo>
+              <UserInfo>{user.name || user.username} logged in</UserInfo>
 
-              <button onClick={handleLogout}>
-                logout
-              </button>
+              <button onClick={handleLogout}>logout</button>
             </>
           )}
         </Navigation>
 
-        {notification && (
-          <Notification>
-            {notification.message}
-          </Notification>
-        )}
+        {notification && <Notification>{notification.message}</Notification>}
 
         <Routes>
-          <Route
-            path="/"
-            element={<Blogs />}
-          />
+          <Route path="/" element={<Blogs />} />
 
-          <Route
-            path="/login"
-            element={<Login />}
-          />
+          <Route path="/login" element={<Login />} />
 
-          <Route
-            path="/create"
-            element={<Create />}
-          />
+          <Route path="/create" element={<Create />} />
 
           <Route
             path="/blogs/:id"
@@ -364,10 +321,7 @@ const App = () => {
             }
           />
 
-          <Route
-            path="*"
-            element={<h2>Page not found</h2>}
-          />
+          <Route path="*" element={<h2>Page not found</h2>} />
         </Routes>
       </div>
     </Router>

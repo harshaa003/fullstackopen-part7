@@ -24,7 +24,7 @@ beforeEach(async () => {
     .send({
       username: 'testuser',
       name: 'Test User',
-      password: 'password123'
+      password: 'password123',
     })
     .expect(201)
 
@@ -34,7 +34,7 @@ beforeEach(async () => {
     .post('/api/login')
     .send({
       username: 'testuser',
-      password: 'password123'
+      password: 'password123',
     })
     .expect(200)
 
@@ -55,7 +55,7 @@ test('returned blogs have id instead of _id', async () => {
     title: 'Test Blog',
     author: 'Test Author',
     url: 'https://example.com',
-    likes: 5
+    likes: 5,
   })
 
   await blog.save()
@@ -77,7 +77,7 @@ test('a valid blog can be added', async () => {
     title: 'New Blog',
     author: 'New Author',
     url: 'https://example.com/new',
-    likes: 10
+    likes: 10,
   }
 
   await api
@@ -96,7 +96,7 @@ test('a blog without likes defaults to 0', async () => {
   const newBlog = {
     title: 'Blog Without Likes',
     author: 'Test Author',
-    url: 'https://example.com/no-likes'
+    url: 'https://example.com/no-likes',
   }
 
   const response = await api
@@ -112,7 +112,7 @@ test('a blog without likes defaults to 0', async () => {
 test('blog without title is not added', async () => {
   const newBlog = {
     author: 'Test Author',
-    url: 'https://example.com'
+    url: 'https://example.com',
   }
 
   await api
@@ -129,7 +129,7 @@ test('blog without title is not added', async () => {
 test('blog without url is not added', async () => {
   const newBlog = {
     title: 'Test Blog',
-    author: 'Test Author'
+    author: 'Test Author',
   }
 
   await api
@@ -151,7 +151,7 @@ test('a blog can be deleted', async () => {
     author: 'Test Author',
     url: 'https://example.com/delete',
     likes: 5,
-    user: user._id
+    user: user._id,
   })
 
   await blog.save()
@@ -171,7 +171,7 @@ test('a blog can be updated', async () => {
     title: 'Blog to Update',
     author: 'Test Author',
     url: 'https://example.com/update',
-    likes: 5
+    likes: 5,
   })
 
   await blog.save()
@@ -180,7 +180,7 @@ test('a blog can be updated', async () => {
     title: 'Blog to Update',
     author: 'Test Author',
     url: 'https://example.com/update',
-    likes: 20
+    likes: 20,
   }
 
   const response = await api
@@ -197,13 +197,10 @@ test('adding a blog without a token fails with status code 401', async () => {
     title: 'No Token Blog',
     author: 'Test Author',
     url: 'https://example.com/no-token',
-    likes: 5
+    likes: 5,
   }
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(401)
+  await api.post('/api/blogs').send(newBlog).expect(401)
 
   const blogs = await Blog.find({})
 

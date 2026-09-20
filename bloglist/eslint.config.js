@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default [
   {
-    ignores: ['dist']
+    ignores: ['dist'],
   },
 
   {
@@ -16,15 +16,15 @@ export default [
       globals: globals.browser,
       parserOptions: {
         ecmaFeatures: {
-          jsx: true
+          jsx: true,
         },
-        sourceType: 'module'
-      }
+        sourceType: 'module',
+      },
     },
 
     plugins: {
       'react-hooks': reactHooks,
-      'react-refresh': reactRefresh
+      'react-refresh': reactRefresh,
     },
 
     rules: {
@@ -34,11 +34,11 @@ export default [
       'no-unused-vars': [
         'error',
         {
-          varsIgnorePattern: '^[A-Z_]'
-        }
+          varsIgnorePattern: '^[A-Z_]',
+        },
       ],
 
-      'react-refresh/only-export-components': 'warn'
-    }
-  }
+      'react-refresh/only-export-components': 'warn',
+    },
+  },
 ]

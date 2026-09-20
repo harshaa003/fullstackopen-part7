@@ -18,7 +18,7 @@ test('a valid user can be created', async () => {
   const newUser = {
     username: 'testuser',
     name: 'Test User',
-    password: 'password123'
+    password: 'password123',
   }
 
   const response = await api
@@ -36,13 +36,10 @@ test('user with too short username is not created', async () => {
   const newUser = {
     username: 'ab',
     name: 'Test User',
-    password: 'password123'
+    password: 'password123',
   }
 
-  const response = await api
-    .post('/api/users')
-    .send(newUser)
-    .expect(400)
+  const response = await api.post('/api/users').send(newUser).expect(400)
 
   assert.strictEqual(response.body.error !== undefined, true)
 
@@ -54,13 +51,10 @@ test('user with too short password is not created', async () => {
   const newUser = {
     username: 'testuser',
     name: 'Test User',
-    password: 'ab'
+    password: 'ab',
   }
 
-  const response = await api
-    .post('/api/users')
-    .send(newUser)
-    .expect(400)
+  const response = await api.post('/api/users').send(newUser).expect(400)
 
   assert.strictEqual(response.body.error !== undefined, true)
 
@@ -71,13 +65,10 @@ test('user with too short password is not created', async () => {
 test('user without username is not created', async () => {
   const newUser = {
     name: 'Test User',
-    password: 'password123'
+    password: 'password123',
   }
 
-  await api
-    .post('/api/users')
-    .send(newUser)
-    .expect(400)
+  await api.post('/api/users').send(newUser).expect(400)
 
   const users = await User.find({})
   assert.strictEqual(users.length, 0)
@@ -86,13 +77,10 @@ test('user without username is not created', async () => {
 test('user without password is not created', async () => {
   const newUser = {
     username: 'testuser',
-    name: 'Test User'
+    name: 'Test User',
   }
 
-  await api
-    .post('/api/users')
-    .send(newUser)
-    .expect(400)
+  await api.post('/api/users').send(newUser).expect(400)
 
   const users = await User.find({})
   assert.strictEqual(users.length, 0)
@@ -102,24 +90,18 @@ test('username must be unique', async () => {
   const firstUser = {
     username: 'testuser',
     name: 'First User',
-    password: 'password123'
+    password: 'password123',
   }
 
   const secondUser = {
     username: 'testuser',
     name: 'Second User',
-    password: 'password456'
+    password: 'password456',
   }
 
-  await api
-    .post('/api/users')
-    .send(firstUser)
-    .expect(201)
+  await api.post('/api/users').send(firstUser).expect(201)
 
-  const response = await api
-    .post('/api/users')
-    .send(secondUser)
-    .expect(400)
+  const response = await api.post('/api/users').send(secondUser).expect(400)
 
   assert.strictEqual(response.body.error, 'username must be unique')
 

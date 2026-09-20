@@ -45,14 +45,14 @@ const BlogForm = ({ createBlog }) => {
 
   const navigate = useNavigate()
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
 
     const blog = {
       title,
       author,
       url,
-      likes: Number(likes) || 0
+      likes: Number(likes) || 0,
     }
 
     try {
@@ -79,9 +79,7 @@ const BlogForm = ({ createBlog }) => {
             title
             <Input
               value={title}
-              onChange={({ target }) =>
-                setTitle(target.value)
-              }
+              onChange={({ target }) => setTitle(target.value)}
             />
           </Label>
         </FormRow>
@@ -91,9 +89,7 @@ const BlogForm = ({ createBlog }) => {
             author
             <Input
               value={author}
-              onChange={({ target }) =>
-                setAuthor(target.value)
-              }
+              onChange={({ target }) => setAuthor(target.value)}
             />
           </Label>
         </FormRow>
@@ -103,9 +99,7 @@ const BlogForm = ({ createBlog }) => {
             url
             <Input
               value={url}
-              onChange={({ target }) =>
-                setUrl(target.value)
-              }
+              onChange={({ target }) => setUrl(target.value)}
             />
           </Label>
         </FormRow>
@@ -116,21 +110,14 @@ const BlogForm = ({ createBlog }) => {
             <Input
               type="number"
               value={likes}
-              onChange={({ target }) =>
-                setLikes(target.value)
-              }
+              onChange={({ target }) => setLikes(target.value)}
             />
           </Label>
         </FormRow>
 
-        <Button type="submit">
-          create
-        </Button>
+        <Button type="submit">create</Button>
 
-        <Button
-          type="button"
-          onClick={() => navigate('/')}
-        >
+        <Button type="button" onClick={() => navigate('/')}>
           cancel
         </Button>
       </form>

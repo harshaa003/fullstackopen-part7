@@ -18,7 +18,7 @@ const userExtractor = async (request, response, next) => {
 
   if (!decodedToken.id) {
     return response.status(401).json({
-      error: 'token invalid'
+      error: 'token invalid',
     })
   }
 
@@ -26,7 +26,7 @@ const userExtractor = async (request, response, next) => {
 
   if (!user) {
     return response.status(401).json({
-      error: 'user not found'
+      error: 'user not found',
     })
   }
 
@@ -37,5 +37,5 @@ const userExtractor = async (request, response, next) => {
 
 module.exports = {
   tokenExtractor,
-  userExtractor
+  userExtractor,
 }

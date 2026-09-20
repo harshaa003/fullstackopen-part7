@@ -12,12 +12,12 @@ const blog = {
   user: {
     username: 'fathima5',
     name: 'Fathima Harsha',
-    id: '12345'
+    id: '12345',
   },
-  id: '67890'
+  id: '67890',
 }
 
-const renderBlogView = user => {
+const renderBlogView = (user) => {
   render(
     <MemoryRouter initialEntries={[`/blogs/${blog.id}`]}>
       <Routes>
@@ -33,7 +33,7 @@ const renderBlogView = user => {
           }
         />
       </Routes>
-    </MemoryRouter>
+    </MemoryRouter>,
   )
 }
 
@@ -41,56 +41,42 @@ describe('BlogView component', () => {
   test('unauthenticated user sees blog information and likes, but no buttons', () => {
     renderBlogView(null)
 
-    expect(
-      screen.getByText('Testing React applications')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Testing React applications')).toBeInTheDocument()
+
+    expect(screen.getByText('by Fathima Harsha')).toBeInTheDocument()
+
+    expect(screen.getByText('https://example.com')).toBeInTheDocument()
+
+    expect(screen.getByText('likes 5')).toBeInTheDocument()
 
     expect(
-      screen.getByText('by Fathima Harsha')
-    ).toBeInTheDocument()
-
-    expect(
-      screen.getByText('https://example.com')
-    ).toBeInTheDocument()
-
-    expect(
-      screen.getByText('likes 5')
-    ).toBeInTheDocument()
-
-    expect(
-      screen.queryByRole('button', { name: 'like' })
+      screen.queryByRole('button', { name: 'like' }),
     ).not.toBeInTheDocument()
 
     expect(
-      screen.queryByRole('button', { name: 'remove' })
+      screen.queryByRole('button', { name: 'remove' }),
     ).not.toBeInTheDocument()
   })
 
   test('authenticated non-creator sees like button but not remove button', () => {
     renderBlogView({
       username: 'seconduser',
-      name: 'Second User'
+      name: 'Second User',
     })
 
-    expect(
-      screen.getByRole('button', { name: 'like' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'like' })).toBeInTheDocument()
 
     expect(
-      screen.queryByRole('button', { name: 'remove' })
+      screen.queryByRole('button', { name: 'remove' }),
     ).not.toBeInTheDocument()
   })
 
   test('creator sees both like and remove buttons', () => {
     renderBlogView(blog.user)
 
-    expect(
-      screen.getByRole('button', { name: 'like' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'like' })).toBeInTheDocument()
 
-    expect(
-      screen.getByRole('button', { name: 'remove' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'remove' })).toBeInTheDocument()
   })
 
   test('like button calls update handler', async () => {
@@ -112,12 +98,10 @@ describe('BlogView component', () => {
             }
           />
         </Routes>
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
-    await user.click(
-      screen.getByRole('button', { name: 'like' })
-    )
+    await user.click(screen.getByRole('button', { name: 'like' }))
 
     expect(updateBlog).toHaveBeenCalledTimes(1)
   })

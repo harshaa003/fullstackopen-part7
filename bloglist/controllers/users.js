@@ -12,13 +12,13 @@ usersRouter.post('/', async (request, response) => {
 
   if (!username || !password) {
     return response.status(400).json({
-      error: 'username and password are required'
+      error: 'username and password are required',
     })
   }
 
   if (username.length < 3 || password.length < 3) {
     return response.status(400).json({
-      error: 'username and password must be at least 3 characters long'
+      error: 'username and password must be at least 3 characters long',
     })
   }
 
@@ -26,7 +26,7 @@ usersRouter.post('/', async (request, response) => {
 
   if (existingUser) {
     return response.status(400).json({
-      error: 'username must be unique'
+      error: 'username must be unique',
     })
   }
 
@@ -35,7 +35,7 @@ usersRouter.post('/', async (request, response) => {
   const user = new User({
     username,
     name,
-    passwordHash
+    passwordHash,
   })
 
   const savedUser = await user.save()

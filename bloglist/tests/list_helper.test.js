@@ -9,7 +9,7 @@ const blogs = [
     author: 'Edsger W. Dijkstra',
     url: 'https://example.com/dijkstra',
     likes: 5,
-    __v: 0
+    __v: 0,
   },
   {
     _id: '2',
@@ -17,7 +17,7 @@ const blogs = [
     author: 'Michael Chan',
     url: 'https://reactpatterns.com/',
     likes: 7,
-    __v: 0
+    __v: 0,
   },
   {
     _id: '3',
@@ -25,7 +25,7 @@ const blogs = [
     author: 'Robert C. Martin',
     url: 'https://example.com/clean-code',
     likes: 10,
-    __v: 0
+    __v: 0,
   },
   {
     _id: '4',
@@ -33,7 +33,7 @@ const blogs = [
     author: 'Robert C. Martin',
     url: 'https://example.com/tdd',
     likes: 6,
-    __v: 0
+    __v: 0,
   },
   {
     _id: '5',
@@ -41,8 +41,8 @@ const blogs = [
     author: 'Robert C. Martin',
     url: 'https://example.com/algorithms',
     likes: 4,
-    __v: 0
-  }
+    __v: 0,
+  },
 ]
 
 test('dummy returns one', () => {
@@ -79,7 +79,7 @@ describe('most blogs', () => {
 
     assert.deepStrictEqual(result, {
       author: 'Robert C. Martin',
-      blogs: 3
+      blogs: 3,
     })
   })
 })
@@ -90,7 +90,7 @@ describe('most likes', () => {
 
     assert.deepStrictEqual(result, {
       author: 'Robert C. Martin',
-      likes: 20
+      likes: 20,
     })
   })
 })

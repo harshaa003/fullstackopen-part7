@@ -11,10 +11,8 @@ describe('BlogForm component', () => {
 
     render(
       <MemoryRouter>
-        <BlogForm
-          createBlog={createBlog}
-        />
-      </MemoryRouter>
+        <BlogForm createBlog={createBlog} />
+      </MemoryRouter>,
     )
 
     const titleInput = screen.getByLabelText('title')
@@ -33,7 +31,7 @@ describe('BlogForm component', () => {
       title: 'My new blog',
       author: 'Fathima',
       url: 'https://example.com/new',
-      likes: 10
+      likes: 10,
     })
   })
 })
