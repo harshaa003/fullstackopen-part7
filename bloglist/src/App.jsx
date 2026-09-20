@@ -1,3 +1,4 @@
+import useNotificationStore from './stores/notificationStore'
 import { useState, useEffect } from 'react'
 import {
   BrowserRouter as Router,
@@ -92,7 +93,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then((blogs) => {
@@ -108,16 +108,13 @@ const App = () => {
     }
   }, [])
 
-  useEffect(() => {
-    if (notification) {
-      const timer = setTimeout(() => {
-        setNotification(null)
-      }, 5000)
+  const notification = useNotificationStore(
+  state => state.notification
+)
 
-      return () => clearTimeout(timer)
-    }
-  }, [notification])
-
+const setNotification = useNotificationStore(
+  state => state.setNotification
+)
   const handleLogin = async (event) => {
     event.preventDefault()
 
@@ -138,10 +135,7 @@ const App = () => {
       setUsername('')
       setPassword('')
 
-      setNotification({
-        message: `Welcome ${loggedUser.name || loggedUser.username}`,
-        type: 'success',
-      })
+      setNotification('...', 'success')
     } catch {
       setNotification({
         message: 'Wrong username or password',
