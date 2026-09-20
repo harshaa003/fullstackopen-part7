@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import axios from 'axios'
 
 const BlogContainer = styled.div`
   max-width: 700px;
@@ -61,6 +63,28 @@ const CommentsTitle = styled.h3`
   margin-bottom: 15px;
 `
 
+const CommentForm = styled.form`
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+`
+
+const CommentInput = styled.input`
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+`
+
+const CommentButton = styled.button`
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #333;
+  color: white;
+`
+
 const CommentList = styled.ul`
   padding-left: 20px;
 `
@@ -77,6 +101,8 @@ const BlogView = ({
 }) => {
   const { id } = useParams()
   const navigate = useNavigate()
+
+  const [newComment, setNewComment] = useState('')
 
   const blog = blogs.find(
     blog => blog.id === id
@@ -115,6 +141,32 @@ const BlogView = ({
     ) {
       await removeBlog(blog.id)
       navigate('/')
+    }
+  }
+
+  const handleComment = async event => {
+    event.preventDefault()
+
+    if (!newComment.trim()) {
+      return
+    }
+
+    try {
+      await axios.post(
+        `/api/blogs/${blog.id}/comments`,
+        {
+          comment: newComment
+        }
+      )
+
+      setNewComment('')
+
+      window.location.reload()
+    } catch (error) {
+      console.error(
+        'Adding comment failed',
+        error
+      )
     }
   }
 
@@ -171,6 +223,24 @@ const BlogView = ({
         <CommentsTitle>
           comments
         </CommentsTitle>
+
+        <CommentForm
+          onSubmit={handleComment}
+        >
+          <CommentInput
+            value={newComment}
+            onChange={event =>
+              setNewComment(
+                event.target.value
+              )
+            }
+            placeholder="write a comment"
+          />
+
+          <CommentButton type="submit">
+            add comment
+          </CommentButton>
+        </CommentForm>
 
         {blog.comments &&
         blog.comments.length > 0 ? (
