@@ -53,11 +53,34 @@ const Creator = styled.div`
   font-style: italic;
 `
 
-const BlogView = ({ blogs, user, updateBlog, removeBlog }) => {
+const CommentsSection = styled.div`
+  margin-top: 30px;
+`
+
+const CommentsTitle = styled.h3`
+  margin-bottom: 15px;
+`
+
+const CommentList = styled.ul`
+  padding-left: 20px;
+`
+
+const Comment = styled.li`
+  margin-bottom: 10px;
+`
+
+const BlogView = ({
+  blogs,
+  user,
+  updateBlog,
+  removeBlog
+}) => {
   const { id } = useParams()
   const navigate = useNavigate()
 
-  const blog = blogs.find((blog) => blog.id === id)
+  const blog = blogs.find(
+    blog => blog.id === id
+  )
 
   if (!blog) {
     return <div>Blog not found</div>
@@ -73,39 +96,101 @@ const BlogView = ({ blogs, user, updateBlog, removeBlog }) => {
       author: blog.author,
       url: blog.url,
       likes: blog.likes + 1,
-      user: blog.user ? blog.user.id : undefined,
+      user: blog.user
+        ? blog.user.id
+        : undefined
     }
 
-    updateBlog(updatedBlog, blog.id)
+    updateBlog(
+      updatedBlog,
+      blog.id
+    )
   }
 
   const handleDelete = async () => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+    if (
+      window.confirm(
+        `Remove blog ${blog.title} by ${blog.author}?`
+      )
+    ) {
       await removeBlog(blog.id)
       navigate('/')
     }
   }
 
-  const isCreator = blog.user && user && blog.user.username === user.username
+  const isCreator =
+    blog.user &&
+    user &&
+    blog.user.username === user.username
 
   return (
     <BlogContainer>
-      <Title>{blog.title}</Title>
+      <Title>
+        {blog.title}
+      </Title>
 
-      <Author>by {blog.author}</Author>
+      <Author>
+        by {blog.author}
+      </Author>
 
-      <BlogLink href={blog.url} target="_blank" rel="noreferrer">
+      <BlogLink
+        href={blog.url}
+        target="_blank"
+        rel="noreferrer"
+      >
         {blog.url}
       </BlogLink>
 
       <Likes>
         likes {blog.likes}
-        {user && <Button onClick={handleLike}>like</Button>}
+
+        {user && (
+          <Button
+            onClick={handleLike}
+          >
+            like
+          </Button>
+        )}
       </Likes>
 
-      {blog.user && <Creator>added by {blog.user.name}</Creator>}
+      {blog.user && (
+        <Creator>
+          added by {blog.user.name}
+        </Creator>
+      )}
 
-      {isCreator && <RemoveButton onClick={handleDelete}>remove</RemoveButton>}
+      {isCreator && (
+        <RemoveButton
+          onClick={handleDelete}
+        >
+          remove
+        </RemoveButton>
+      )}
+
+      <CommentsSection>
+        <CommentsTitle>
+          comments
+        </CommentsTitle>
+
+        {blog.comments &&
+        blog.comments.length > 0 ? (
+          <CommentList>
+            {blog.comments.map(
+              (comment, index) => (
+                <Comment
+                  key={index}
+                >
+                  {comment}
+                </Comment>
+              )
+            )}
+          </CommentList>
+        ) : (
+          <p>
+            No comments yet.
+          </p>
+        )}
+      </CommentsSection>
     </BlogContainer>
   )
 }
