@@ -14,6 +14,7 @@ import axios from 'axios'
 
 import useNotificationStore from './stores/notificationStore'
 import useBlogStore from './stores/blogStore'
+import useUserStore from './stores/userStore'
 
 const Navigation = styled.nav`
   background: #333;
@@ -92,7 +93,6 @@ const Button = styled.button`
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
 
   const notification = useNotificationStore(
     state => state.notification
@@ -122,6 +122,18 @@ const App = () => {
     state => state.removeBlog
   )
 
+  const user = useUserStore(
+    state => state.user
+  )
+
+  const setUser = useUserStore(
+    state => state.setUser
+  )
+
+  const clearUser = useUserStore(
+    state => state.clearUser
+  )
+
   useEffect(() => {
     initializeBlogs()
   }, [initializeBlogs])
@@ -134,7 +146,7 @@ const App = () => {
     if (loggedUserJSON) {
       setUser(JSON.parse(loggedUserJSON))
     }
-  }, [])
+  }, [setUser])
 
   const handleLogin = async event => {
     event.preventDefault()
@@ -173,7 +185,7 @@ const App = () => {
       'loggedBloglistUser'
     )
 
-    setUser(null)
+    clearUser()
 
     setNotification(
       'Logged out successfully',
