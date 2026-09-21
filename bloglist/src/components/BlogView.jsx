@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import {
+  useNavigate,
+  useParams
+} from 'react-router-dom'
 import styled from 'styled-components'
 import axios from 'axios'
 
@@ -211,8 +214,7 @@ const BlogView = ({
 
       <BlogInfo>
         <strong>Added by:</strong>{' '}
-        {blog.user?.name ||
-          blog.author}
+        {blog.user.name}
       </BlogInfo>
 
       {user && (
@@ -237,6 +239,7 @@ const BlogView = ({
               )
             }
             placeholder="write a comment"
+            aria-label="comment"
           />
 
           <Button type="submit">

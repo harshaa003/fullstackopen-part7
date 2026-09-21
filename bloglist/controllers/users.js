@@ -4,7 +4,26 @@ const User = require('../models/user')
 
 usersRouter.get('/', async (request, response) => {
   const users = await User.find({}).populate('blogs')
+
   response.json(users)
+})
+
+usersRouter.get('/:id', async (request, response, next) => {
+  try {
+    const user = await User.findById(
+      request.params.id
+    ).populate('blogs')
+
+    if (!user) {
+      return response.status(404).json({
+        error: 'user not found'
+      })
+    }
+
+    response.json(user)
+  } catch (error) {
+    next(error)
+  }
 })
 
 usersRouter.post('/', async (request, response) => {
@@ -16,13 +35,19 @@ usersRouter.post('/', async (request, response) => {
     })
   }
 
-  if (username.length < 3 || password.length < 3) {
+  if (
+    username.length < 3 ||
+    password.length < 3
+  ) {
     return response.status(400).json({
-      error: 'username and password must be at least 3 characters long',
+      error:
+        'username and password must be at least 3 characters long',
     })
   }
 
-  const existingUser = await User.findOne({ username })
+  const existingUser = await User.findOne({
+    username
+  })
 
   if (existingUser) {
     return response.status(400).json({
@@ -30,7 +55,10 @@ usersRouter.post('/', async (request, response) => {
     })
   }
 
-  const passwordHash = await bcrypt.hash(password, 10)
+  const passwordHash = await bcrypt.hash(
+    password,
+    10
+  )
 
   const user = new User({
     username,

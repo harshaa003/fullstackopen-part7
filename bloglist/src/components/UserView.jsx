@@ -3,8 +3,9 @@ import { Link, useParams } from 'react-router-dom'
 import axios from 'axios'
 
 const UserView = () => {
-  const [user, setUser] = useState(null)
   const { id } = useParams()
+  const [user, setUser] = useState(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     axios
@@ -12,23 +13,35 @@ const UserView = () => {
       .then(response => {
         setUser(response.data)
       })
+      .catch(error => {
+        console.error(error)
+        setError('User not found')
+      })
   }, [id])
+
+  if (error) {
+    return <div>{error}</div>
+  }
 
   if (!user) {
     return <div>Loading...</div>
   }
 
+  const blogs = Array.isArray(user.blogs)
+    ? user.blogs
+    : []
+
   return (
     <div>
-      <h2>{user.name}</h2>
+      <h2>{user.name || user.username}</h2>
 
       <h3>added blogs</h3>
 
-      {user.blogs.length === 0 ? (
-        <p>This user has not added any blogs.</p>
+      {blogs.length === 0 ? (
+        <p>No blogs added.</p>
       ) : (
         <ul>
-          {user.blogs.map(blog => (
+          {blogs.map(blog => (
             <li key={blog.id}>
               <Link to={`/blogs/${blog.id}`}>
                 {blog.title}

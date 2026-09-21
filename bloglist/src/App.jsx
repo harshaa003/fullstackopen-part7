@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
   Link,
@@ -11,8 +10,8 @@ import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import BlogView from './components/BlogView'
 import UserView from './components/UserView'
+import ErrorBoundary from './ErrorBoundary'
 import axios from 'axios'
-
 import useNotificationStore from './stores/notificationStore'
 import useBlogStore from './stores/blogStore'
 import useUserStore from './stores/userStore'
@@ -142,7 +141,6 @@ const UserTable = styled.table`
     text-decoration: none;
   }
 `
-
 const Users = () => {
   const [users, setUsers] = useState([])
 
@@ -154,7 +152,7 @@ const Users = () => {
 
   return (
     <div>
-      <PageTitle>Users</PageTitle>
+      <PageTitle>users</PageTitle>
 
       <UserTable>
         <thead>
@@ -173,7 +171,11 @@ const Users = () => {
                 </Link>
               </td>
 
-              <td>{user.blogs.length}</td>
+              <td>
+                {Array.isArray(user.blogs)
+                  ? user.blogs.length
+                  : 0}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -181,8 +183,6 @@ const Users = () => {
     </div>
   )
 }
-
-/* LOGIN IS NOW OUTSIDE APP */
 const Login = ({
   user,
   username,
@@ -213,7 +213,7 @@ const Login = ({
         </FormRow>
 
         <Button type="submit">
-          Login
+          login
         </Button>
       </form>
     </LoginForm>
@@ -295,7 +295,6 @@ const App = () => {
       const loggedUser = response.data
 
       persistentUser.saveUser(loggedUser)
-
       setUser(loggedUser)
 
       username.reset()
@@ -317,7 +316,6 @@ const App = () => {
 
   const handleLogout = () => {
     persistentUser.removeUser()
-
     clearUser()
 
     setNotification(
@@ -345,9 +343,7 @@ const App = () => {
         'error'
       )
 
-      throw new Error(
-        'Adding blog failed'
-      )
+      throw new Error('Adding blog failed')
     }
   }
 
@@ -367,9 +363,7 @@ const App = () => {
         'error'
       )
 
-      throw new Error(
-        'Updating blog failed'
-      )
+      throw new Error('Updating blog failed')
     }
   }
 
@@ -418,9 +412,7 @@ const App = () => {
 
   const Blogs = () => (
     <div>
-      <PageTitle>
-        Blogs
-      </PageTitle>
+      <PageTitle>blogs</PageTitle>
 
       {blogs
         .slice()
@@ -440,9 +432,7 @@ const App = () => {
 
   const Create = () => {
     if (!user) {
-      return (
-        <Navigate to="/login" />
-      )
+      return <Navigate to="/login" />
     }
 
     return (
@@ -453,51 +443,49 @@ const App = () => {
   }
 
   return (
-    <Router>
-      <Page>
-        <Navigation>
-          <Link to="/">
-            Blogs
+    <Page>
+      <Navigation>
+        <Link to="/">
+          blogs
+        </Link>
+
+        <Link to="/users">
+          users
+        </Link>
+
+        {!user && (
+          <Link to="/login">
+            login
           </Link>
-
-          <Link to="/users">
-            Users
-          </Link>
-
-          {!user && (
-            <Link to="/login">
-              Login
-            </Link>
-          )}
-
-          {user && (
-            <>
-              <Link to="/create">
-                Create
-              </Link>
-
-              <UserInfo>
-                {user.name ||
-                  user.username}{' '}
-                logged in
-              </UserInfo>
-
-              <button
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
-            </>
-          )}
-        </Navigation>
-
-        {notification && (
-          <Notification>
-            {notification.message}
-          </Notification>
         )}
 
-        <Main>
+        {user && (
+          <>
+            <Link to="/create">
+              new blog
+            </Link>
+
+            <UserInfo>
+              {user.name ||
+                user.username}{' '}
+              logged in
+            </UserInfo>
+
+            <button onClick={handleLogout}>
+              logout
+            </button>
+          </>
+        )}
+      </Navigation>
+
+      {notification && (
+        <Notification>
+          {notification.message}
+        </Notification>
+      )}
+
+      <Main>
+        <ErrorBoundary>
           <Routes>
             <Route
               path="/"
@@ -553,9 +541,9 @@ const App = () => {
               }
             />
           </Routes>
-        </Main>
-      </Page>
-    </Router>
+        </ErrorBoundary>
+      </Main>
+    </Page>
   )
 }
 

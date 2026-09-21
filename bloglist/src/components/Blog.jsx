@@ -9,9 +9,15 @@ const BlogContainer = styled.div`
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 `
 
-const BlogTitle = styled.strong`
+const BlogTitle = styled(Link)`
   font-size: 18px;
   color: #1f2937;
+  font-weight: bold;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `
 
 const BlogAuthor = styled.span`
@@ -34,7 +40,10 @@ const Blog = ({ blog, likeBlog }) => {
   return (
     <BlogContainer className="blog">
       <div>
-        <BlogTitle className="blog-title">
+        <BlogTitle
+          className="blog-title"
+          to={`/blogs/${blog.id}`}
+        >
           {blog.title}
         </BlogTitle>{' '}
 

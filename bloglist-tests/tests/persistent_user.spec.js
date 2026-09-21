@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url'
 import { test, expect } from '@playwright/test'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const srcDir = path.join(__dirname, '..', '..', 'bloglist', 'client', 'src')
+const srcDir = path.join(__dirname, '..', '..', 'bloglist', 'src')
 const persistentUserPath = path.join(srcDir, 'services', 'persistentUser.js')
 
 const walk = dir =>
