@@ -39,8 +39,14 @@ const useBlogStore = create((set) => ({
 
   likeBlog: async (id, blog, token) => {
     const updatedBlog = {
-      ...blog,
-      likes: blog.likes + 1
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes + 1,
+      user:
+        typeof blog.user === 'object'
+          ? blog.user.id
+          : blog.user
     }
 
     const returnedBlog = await blogService.update(

@@ -1,88 +1,64 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import axios from 'axios'
 
-const BlogContainer = styled.div`
-  max-width: 700px;
+const Container = styled.div`
+  max-width: 800px;
   margin: 30px auto;
-  padding: 25px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  background: #f9f9f9;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 `
 
-const Title = styled.h2`
-  margin-bottom: 10px;
-  color: #333;
+const BlogTitle = styled.h2`
+  color: #2563eb;
 `
 
-const Author = styled.div`
-  font-size: 18px;
-  margin-bottom: 15px;
+const BlogInfo = styled.p`
   color: #555;
 `
 
-const BlogLink = styled.a`
-  display: block;
-  margin-bottom: 20px;
-  color: #0066cc;
-  word-break: break-word;
-`
-
-const Likes = styled.div`
-  font-size: 18px;
-  margin-bottom: 15px;
-`
-
 const Button = styled.button`
-  padding: 7px 14px;
-  margin-left: 10px;
+  padding: 8px 14px;
+  margin: 5px;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
   cursor: pointer;
+
+  &:hover {
+    background: #1d4ed8;
+  }
 `
 
 const RemoveButton = styled(Button)`
-  background: #d9534f;
-  color: white;
-`
+  background: #dc2626;
 
-const Creator = styled.div`
-  margin-top: 15px;
-  color: #666;
-  font-style: italic;
+  &:hover {
+    background: #b91c1c;
+  }
 `
 
 const CommentsSection = styled.div`
   margin-top: 30px;
-`
-
-const CommentsTitle = styled.h3`
-  margin-bottom: 15px;
+  padding-top: 20px;
+  border-top: 2px solid #ddd;
 `
 
 const CommentForm = styled.form`
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
+  margin: 15px 0;
 `
 
 const CommentInput = styled.input`
   flex: 1;
-  padding: 8px;
-  border: 1px solid #aaa;
-  border-radius: 5px;
-`
-
-const CommentButton = styled.button`
-  padding: 8px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background: #333;
-  color: white;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 `
 
 const CommentList = styled.ul`
@@ -90,57 +66,81 @@ const CommentList = styled.ul`
 `
 
 const Comment = styled.li`
-  margin-bottom: 10px;
+  margin: 8px 0;
+  padding: 8px;
+  background: #f3f4f6;
+  border-radius: 6px;
 `
 
 const BlogView = ({
   blogs,
-  user,
-  updateBlog,
-  removeBlog
+  likeBlog,
+  removeBlog,
+  user
 }) => {
+  const [blog, setBlog] = useState(null)
+  const [newComment, setNewComment] = useState('')
+
   const { id } = useParams()
   const navigate = useNavigate()
 
-  const [newComment, setNewComment] = useState('')
+  useEffect(() => {
+    const foundBlog = blogs.find(
+      blog => blog.id === id
+    )
 
-  const blog = blogs.find(
-    blog => blog.id === id
-  )
+    if (foundBlog) {
+      setBlog(foundBlog)
+    }
+  }, [blogs, id])
 
   if (!blog) {
-    return <div>Blog not found</div>
+    return <div>Loading...</div>
   }
 
-  const handleLike = () => {
-    if (!user) {
+  const handleLike = async () => {
+    if (!likeBlog) {
+      console.error(
+        'likeBlog prop is missing'
+      )
       return
     }
 
-    const updatedBlog = {
-      title: blog.title,
-      author: blog.author,
-      url: blog.url,
-      likes: blog.likes + 1,
-      user: blog.user
-        ? blog.user.id
-        : undefined
-    }
+    try {
+      const updatedBlog =
+        await likeBlog(blog)
 
-    updateBlog(
-      updatedBlog,
-      blog.id
-    )
+      if (updatedBlog) {
+        setBlog(updatedBlog)
+      }
+    } catch (error) {
+      console.error(
+        'Liking blog failed:',
+        error
+      )
+    }
   }
 
-  const handleDelete = async () => {
+  const handleRemove = async () => {
+    if (!user) {
+      alert('You must be logged in')
+      return
+    }
+
     if (
       window.confirm(
-        `Remove blog ${blog.title} by ${blog.author}?`
+        `Remove blog ${blog.title}?`
       )
     ) {
-      await removeBlog(blog.id)
-      navigate('/')
+      try {
+        await removeBlog(blog.id)
+        navigate('/')
+      } catch (error) {
+        console.error(
+          'Removing blog failed:',
+          error
+        )
+      }
     }
   }
 
@@ -152,77 +152,79 @@ const BlogView = ({
     }
 
     try {
-      await axios.post(
-        `/api/blogs/${blog.id}/comments`,
-        {
-          comment: newComment
-        }
-      )
+      const response =
+        await axios.post(
+          `/api/blogs/${blog.id}/comments`,
+          {
+            comment:
+              newComment.trim()
+          }
+        )
 
+      setBlog(response.data)
       setNewComment('')
-
-      window.location.reload()
     } catch (error) {
       console.error(
-        'Adding comment failed',
+        'Adding comment failed:',
         error
+      )
+
+      alert(
+        error.response?.data?.error ||
+          'Adding comment failed'
       )
     }
   }
 
-  const isCreator =
-    blog.user &&
-    user &&
-    blog.user.username === user.username
-
   return (
-    <BlogContainer>
-      <Title>
+    <Container>
+      <BlogTitle>
         {blog.title}
-      </Title>
+      </BlogTitle>
 
-      <Author>
-        by {blog.author}
-      </Author>
+      <BlogInfo>
+        <strong>URL:</strong>{' '}
+        <a
+          href={blog.url}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {blog.url}
+        </a>
+      </BlogInfo>
 
-      <BlogLink
-        href={blog.url}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {blog.url}
-      </BlogLink>
+      <BlogInfo>
+        <strong>Author:</strong>{' '}
+        {blog.author}
+      </BlogInfo>
 
-      <Likes>
-        likes {blog.likes}
+      <BlogInfo>
+        <strong>Likes:</strong>{' '}
+        {blog.likes}
 
-        {user && (
-          <Button
-            onClick={handleLike}
-          >
-            like
-          </Button>
-        )}
-      </Likes>
+        <Button
+          onClick={handleLike}
+        >
+          like
+        </Button>
+      </BlogInfo>
 
-      {blog.user && (
-        <Creator>
-          added by {blog.user.name}
-        </Creator>
-      )}
+      <BlogInfo>
+        <strong>Added by:</strong>{' '}
+        {blog.user?.name ||
+          blog.author}
+      </BlogInfo>
 
-      {isCreator && (
+      {user && (
         <RemoveButton
-          onClick={handleDelete}
+          onClick={handleRemove}
         >
           remove
         </RemoveButton>
       )}
 
       <CommentsSection>
-        <CommentsTitle>
-          comments
-        </CommentsTitle>
+        <h3>comments</h3>
 
         <CommentForm
           onSubmit={handleComment}
@@ -237,9 +239,9 @@ const BlogView = ({
             placeholder="write a comment"
           />
 
-          <CommentButton type="submit">
+          <Button type="submit">
             add comment
-          </CommentButton>
+          </Button>
         </CommentForm>
 
         {blog.comments &&
@@ -256,12 +258,10 @@ const BlogView = ({
             )}
           </CommentList>
         ) : (
-          <p>
-            No comments yet.
-          </p>
+          <p>No comments yet.</p>
         )}
       </CommentsSection>
-    </BlogContainer>
+    </Container>
   )
 }
 

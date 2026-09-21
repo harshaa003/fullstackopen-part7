@@ -19,13 +19,18 @@ import useUserStore from './stores/userStore'
 import persistentUser from './services/persistentUser'
 import { useField } from './hooks'
 
+const Page = styled.div`
+  min-height: 100vh;
+  background: #f4f6f8;
+  color: #222;
+`
+
 const Navigation = styled.nav`
-  background: #333;
-  padding: 12px 20px;
-  margin-bottom: 20px;
+  background: #1f2937;
+  padding: 18px 30px;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
 
   a {
     color: white;
@@ -34,81 +39,124 @@ const Navigation = styled.nav`
   }
 
   a:hover {
-    text-decoration: underline;
+    color: #60a5fa;
   }
 
   button {
-    padding: 6px 12px;
+    padding: 8px 14px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
+    background: #dc2626;
+    color: white;
+    font-weight: bold;
   }
 `
 
+const Main = styled.main`
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 30px 20px;
+`
+
 const UserInfo = styled.span`
-  color: white;
+  color: #d1d5db;
+  margin-left: auto;
 `
 
 const Notification = styled.div`
-  background: #e0f2e9;
-  border: 2px solid #2e8b57;
-  color: #256d3f;
-  padding: 10px;
-  margin-bottom: 20px;
-  border-radius: 5px;
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 14px 18px;
+  border-radius: 8px;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  color: #166534;
   font-weight: bold;
 `
 
 const LoginForm = styled.div`
-  background: #f5f5f5;
-  padding: 20px;
-  margin-top: 20px;
-  border-radius: 8px;
-  max-width: 400px;
+  background: white;
+  padding: 30px;
+  margin: 30px auto;
+  border-radius: 12px;
+  max-width: 450px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 `
 
 const FormRow = styled.div`
-  margin-bottom: 12px;
+  margin-bottom: 18px;
 `
 
 const Label = styled.label`
   display: flex;
   flex-direction: column;
   font-weight: bold;
-  gap: 5px;
+  gap: 7px;
 `
 
 const Input = styled.input`
-  padding: 8px;
-  border: 1px solid #aaa;
-  border-radius: 4px;
+  padding: 10px 12px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
   font-size: 16px;
 `
 
 const Button = styled.button`
-  padding: 8px 16px;
+  padding: 9px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 15px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+`
+
+const PageTitle = styled.h2`
+  color: #1f2937;
+  margin-bottom: 20px;
+`
+
+const UserTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+
+  th,
+  td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  th {
+    background: #1f2937;
+    color: white;
+  }
+
+  a {
+    color: #2563eb;
+    text-decoration: none;
+  }
 `
 
 const Users = () => {
   const [users, setUsers] = useState([])
 
   useEffect(() => {
-    axios
-      .get('/api/users')
-      .then(response => {
-        setUsers(response.data)
-      })
+    axios.get('/api/users').then(response => {
+      setUsers(response.data)
+    })
   }, [])
 
   return (
     <div>
-      <h2>Users</h2>
+      <PageTitle>Users</PageTitle>
 
-      <table>
+      <UserTable>
         <thead>
           <tr>
             <th>User</th>
@@ -125,14 +173,50 @@ const Users = () => {
                 </Link>
               </td>
 
-              <td>
-                {user.blogs.length}
-              </td>
+              <td>{user.blogs.length}</td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </UserTable>
     </div>
+  )
+}
+
+/* LOGIN IS NOW OUTSIDE APP */
+const Login = ({
+  user,
+  username,
+  password,
+  handleLogin
+}) => {
+  if (user) {
+    return <Navigate to="/" />
+  }
+
+  return (
+    <LoginForm>
+      <h2>Log in to application</h2>
+
+      <form onSubmit={handleLogin}>
+        <FormRow>
+          <Label>
+            Username
+            <Input {...username.inputProps} />
+          </Label>
+        </FormRow>
+
+        <FormRow>
+          <Label>
+            Password
+            <Input {...password.inputProps} />
+          </Label>
+        </FormRow>
+
+        <Button type="submit">
+          Login
+        </Button>
+      </form>
+    </LoginForm>
   )
 }
 
@@ -162,6 +246,10 @@ const App = () => {
 
   const updateBlog = useBlogStore(
     state => state.updateBlog
+  )
+
+  const likeBlog = useBlogStore(
+    state => state.likeBlog
   )
 
   const removeBlog = useBlogStore(
@@ -215,8 +303,7 @@ const App = () => {
 
       setNotification(
         `Welcome ${
-          loggedUser.name ||
-          loggedUser.username
+          loggedUser.name || loggedUser.username
         }`,
         'success'
       )
@@ -241,11 +328,10 @@ const App = () => {
 
   const handleCreateBlog = async blog => {
     try {
-      const createdBlog =
-        await createBlog(
-          blog,
-          user.token
-        )
+      const createdBlog = await createBlog(
+        blog,
+        user.token
+      )
 
       setNotification(
         `a new blog ${createdBlog.title} added`,
@@ -270,14 +356,11 @@ const App = () => {
     id
   ) => {
     try {
-      const returnedBlog =
-        await updateBlog(
-          id,
-          updatedBlog,
-          user.token
-        )
-
-      return returnedBlog
+      return await updateBlog(
+        id,
+        updatedBlog,
+        user.token
+      )
     } catch {
       setNotification(
         'Updating the blog failed',
@@ -286,6 +369,26 @@ const App = () => {
 
       throw new Error(
         'Updating blog failed'
+      )
+    }
+  }
+
+  const handleLikeBlog = async blog => {
+    try {
+      await likeBlog(
+        blog.id,
+        blog,
+        user.token
+      )
+
+      setNotification(
+        'Blog liked',
+        'success'
+      )
+    } catch {
+      setNotification(
+        'Liking the blog failed',
+        'error'
       )
     }
   }
@@ -315,61 +418,25 @@ const App = () => {
 
   const Blogs = () => (
     <div>
-      <h2>blogs</h2>
+      <PageTitle>
+        Blogs
+      </PageTitle>
 
       {blogs
         .slice()
         .sort(
-          (a, b) => b.likes - a.likes
+          (a, b) =>
+            b.likes - a.likes
         )
         .map(blog => (
           <Blog
             key={blog.id}
             blog={blog}
+            likeBlog={handleLikeBlog}
           />
         ))}
     </div>
   )
-
-  const Login = () => {
-    if (user) {
-      return <Navigate to="/" />
-    }
-
-    return (
-      <LoginForm>
-        <h2>
-          Log in to application
-        </h2>
-
-        <form onSubmit={handleLogin}>
-          <FormRow>
-            <Label>
-              username
-
-              <Input
-                {...username.inputProps}
-              />
-            </Label>
-          </FormRow>
-
-          <FormRow>
-            <Label>
-              password
-
-              <Input
-                {...password.inputProps}
-              />
-            </Label>
-          </FormRow>
-
-          <Button type="submit">
-            login
-          </Button>
-        </form>
-      </LoginForm>
-    )
-  }
 
   const Create = () => {
     if (!user) {
@@ -387,26 +454,26 @@ const App = () => {
 
   return (
     <Router>
-      <div>
+      <Page>
         <Navigation>
           <Link to="/">
-            blogs
+            Blogs
           </Link>
 
           <Link to="/users">
-            users
+            Users
           </Link>
 
           {!user && (
             <Link to="/login">
-              login
+              Login
             </Link>
           )}
 
           {user && (
             <>
               <Link to="/create">
-                create
+                Create
               </Link>
 
               <UserInfo>
@@ -418,7 +485,7 @@ const App = () => {
               <button
                 onClick={handleLogout}
               >
-                logout
+                Logout
               </button>
             </>
           )}
@@ -430,58 +497,64 @@ const App = () => {
           </Notification>
         )}
 
-        <Routes>
-          <Route
-            path="/"
-            element={<Blogs />}
-          />
+        <Main>
+          <Routes>
+            <Route
+              path="/"
+              element={<Blogs />}
+            />
 
-          <Route
-            path="/users"
-            element={<Users />}
-          />
+            <Route
+              path="/users"
+              element={<Users />}
+            />
 
-          <Route
-            path="/users/:id"
-            element={<UserView />}
-          />
+            <Route
+              path="/users/:id"
+              element={<UserView />}
+            />
 
-          <Route
-            path="/login"
-            element={<Login />}
-          />
+            <Route
+              path="/login"
+              element={
+                <Login
+                  user={user}
+                  username={username}
+                  password={password}
+                  handleLogin={handleLogin}
+                />
+              }
+            />
 
-          <Route
-            path="/create"
-            element={<Create />}
-          />
+            <Route
+              path="/create"
+              element={<Create />}
+            />
 
-          <Route
-            path="/blogs/:id"
-            element={
-              <BlogView
-                blogs={blogs}
-                user={user}
-                updateBlog={
-                  handleUpdateBlog
-                }
-                removeBlog={
-                  handleRemoveBlog
-                }
-              />
-            }
-          />
+            <Route
+              path="/blogs/:id"
+              element={
+                <BlogView
+                  blogs={blogs}
+                  user={user}
+                  likeBlog={handleLikeBlog}
+                  updateBlog={handleUpdateBlog}
+                  removeBlog={handleRemoveBlog}
+                />
+              }
+            />
 
-          <Route
-            path="*"
-            element={
-              <h2>
-                Page not found
-              </h2>
-            }
-          />
-        </Routes>
-      </div>
+            <Route
+              path="*"
+              element={
+                <h2>
+                  Page not found
+                </h2>
+              }
+            />
+          </Routes>
+        </Main>
+      </Page>
     </Router>
   )
 }
