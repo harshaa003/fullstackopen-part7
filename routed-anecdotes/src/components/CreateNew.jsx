@@ -2,15 +2,16 @@ import { useNavigate } from 'react-router-dom'
 import { useField, useAnecdotes } from '../hooks'
 
 const CreateNew = () => {
-  const navigate = useNavigate()
-  const { addAnecdote } = useAnecdotes()
-
   const content = useField('text')
   const author = useField('text')
   const info = useField('text')
 
-  const submit = async (event) => {
-    event.preventDefault()
+  const { addAnecdote } = useAnecdotes()
+
+  const navigate = useNavigate()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
 
     await addAnecdote({
       content: content.value,
@@ -19,41 +20,44 @@ const CreateNew = () => {
       votes: 0
     })
 
-    content.reset()
-    author.reset()
-    info.reset()
-
     navigate('/')
   }
 
-  const reset = () => {
+  const handleReset = () => {
     content.reset()
     author.reset()
     info.reset()
   }
+
+  const { reset: contentReset, ...contentInput } = content
+  const { reset: authorReset, ...authorInput } = author
+  const { reset: infoReset, ...infoInput } = info
 
   return (
     <div>
       <h2>create a new anecdote</h2>
 
-      <form onSubmit={submit}>
+      <form onSubmit={handleSubmit}>
         <div>
           content
-          <input {...content.inputProps} />
+          <input {...contentInput} />
         </div>
 
         <div>
           author
-          <input {...author.inputProps} />
+          <input {...authorInput} />
         </div>
 
         <div>
           url for more info
-          <input {...info.inputProps} />
+          <input {...infoInput} />
         </div>
 
         <button type="submit">create</button>
-        <button type="button" onClick={reset}>reset</button>
+
+        <button type="button" onClick={handleReset}>
+          reset
+        </button>
       </form>
     </div>
   )

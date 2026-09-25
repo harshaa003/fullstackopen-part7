@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useAnecdotes } from '../hooks'
 
 const AnecdoteList = () => {
@@ -10,7 +11,9 @@ const AnecdoteList = () => {
       <ul>
         {anecdotes.map(anecdote => (
           <li key={anecdote.id}>
-            {anecdote.content}
+            <Link to={`/anecdotes/${anecdote.id}`}>
+              {anecdote.content}
+            </Link>
 
             <button onClick={() => deleteAnecdote(anecdote.id)}>
               delete

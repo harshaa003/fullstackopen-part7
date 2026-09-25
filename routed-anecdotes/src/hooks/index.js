@@ -16,12 +16,7 @@ export const useField = (type) => {
     type,
     value,
     onChange,
-    reset,
-    inputProps: {
-      type,
-      value,
-      onChange
-    }
+    reset
   }
 }
 
@@ -29,22 +24,25 @@ export const useAnecdotes = () => {
   const [anecdotes, setAnecdotes] = useState([])
 
   useEffect(() => {
-    anecdoteService.getAll().then(data => {
-      setAnecdotes(data)
-    })
+    anecdoteService
+      .getAll()
+      .then(data => setAnecdotes(data))
   }, [])
 
-  const addAnecdote = async (anecdote) => {
-    const newAnecdote = await anecdoteService.createNew(anecdote)
+  const addAnecdote = async (newAnecdote) => {
+    const createdAnecdote =
+      await anecdoteService.createNew(newAnecdote)
 
-    setAnecdotes(current => current.concat(newAnecdote))
+    setAnecdotes(anecdotes =>
+      anecdotes.concat(createdAnecdote)
+    )
   }
 
   const deleteAnecdote = async (id) => {
     await anecdoteService.remove(id)
 
-    setAnecdotes(current =>
-      current.filter(anecdote => anecdote.id !== id)
+    setAnecdotes(anecdotes =>
+      anecdotes.filter(anecdote => anecdote.id !== id)
     )
   }
 

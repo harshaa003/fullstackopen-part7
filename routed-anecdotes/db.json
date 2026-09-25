@@ -27,6 +27,20 @@
       "info": "https://playwright.dev",
       "votes": 0,
       "id": "vKZVJSJc9Zc"
+    },
+    {
+      "content": "an anecdote created by playwright 1790362781588",
+      "author": "Playwright",
+      "info": "https://playwright.dev",
+      "votes": 0,
+      "id": "OvU4CpOAOCE"
+    },
+    {
+      "content": "an anecdote created by playwright 1790363099012",
+      "author": "Playwright",
+      "info": "https://playwright.dev",
+      "votes": 0,
+      "id": "q8uoEh7gW8o"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
