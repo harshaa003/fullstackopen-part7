@@ -10,10 +10,10 @@ const UserView = () => {
   useEffect(() => {
     axios
       .get(`/api/users/${id}`)
-      .then(response => {
+      .then((response) => {
         setUser(response.data)
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error)
         setError('User not found')
       })
@@ -27,9 +27,7 @@ const UserView = () => {
     return <div>Loading...</div>
   }
 
-  const blogs = Array.isArray(user.blogs)
-    ? user.blogs
-    : []
+  const blogs = Array.isArray(user.blogs) ? user.blogs : []
 
   return (
     <div>
@@ -41,11 +39,9 @@ const UserView = () => {
         <p>No blogs added.</p>
       ) : (
         <ul>
-          {blogs.map(blog => (
+          {blogs.map((blog) => (
             <li key={blog.id}>
-              <Link to={`/blogs/${blog.id}`}>
-                {blog.title}
-              </Link>
+              <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
             </li>
           ))}
         </ul>

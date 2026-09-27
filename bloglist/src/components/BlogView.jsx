@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react'
-import {
-  useNavigate,
-  useParams
-} from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import axios from 'axios'
 
@@ -75,12 +72,7 @@ const Comment = styled.li`
   border-radius: 6px;
 `
 
-const BlogView = ({
-  blogs,
-  likeBlog,
-  removeBlog,
-  user
-}) => {
+const BlogView = ({ blogs, likeBlog, removeBlog, user }) => {
   const [blog, setBlog] = useState(null)
   const [newComment, setNewComment] = useState('')
 
@@ -88,9 +80,7 @@ const BlogView = ({
   const navigate = useNavigate()
 
   useEffect(() => {
-    const foundBlog = blogs.find(
-      blog => blog.id === id
-    )
+    const foundBlog = blogs.find((blog) => blog.id === id)
 
     if (foundBlog) {
       setBlog(foundBlog)
@@ -103,24 +93,18 @@ const BlogView = ({
 
   const handleLike = async () => {
     if (!likeBlog) {
-      console.error(
-        'likeBlog prop is missing'
-      )
+      console.error('likeBlog prop is missing')
       return
     }
 
     try {
-      const updatedBlog =
-        await likeBlog(blog)
+      const updatedBlog = await likeBlog(blog)
 
       if (updatedBlog) {
         setBlog(updatedBlog)
       }
     } catch (error) {
-      console.error(
-        'Liking blog failed:',
-        error
-      )
+      console.error('Liking blog failed:', error)
     }
   }
 
@@ -130,24 +114,17 @@ const BlogView = ({
       return
     }
 
-    if (
-      window.confirm(
-        `Remove blog ${blog.title}?`
-      )
-    ) {
+    if (window.confirm(`Remove blog ${blog.title}?`)) {
       try {
         await removeBlog(blog.id)
         navigate('/')
       } catch (error) {
-        console.error(
-          'Removing blog failed:',
-          error
-        )
+        console.error('Removing blog failed:', error)
       }
     }
   }
 
-  const handleComment = async event => {
+  const handleComment = async (event) => {
     event.preventDefault()
 
     if (!newComment.trim()) {
@@ -155,110 +132,64 @@ const BlogView = ({
     }
 
     try {
-      const response =
-        await axios.post(
-          `/api/blogs/${blog.id}/comments`,
-          {
-            comment:
-              newComment.trim()
-          }
-        )
+      const response = await axios.post(`/api/blogs/${blog.id}/comments`, {
+        comment: newComment.trim(),
+      })
 
       setBlog(response.data)
       setNewComment('')
     } catch (error) {
-      console.error(
-        'Adding comment failed:',
-        error
-      )
+      console.error('Adding comment failed:', error)
 
-      alert(
-        error.response?.data?.error ||
-          'Adding comment failed'
-      )
+      alert(error.response?.data?.error || 'Adding comment failed')
     }
   }
 
   return (
     <Container>
-      <BlogTitle>
-        {blog.title}
-      </BlogTitle>
+      <BlogTitle>{blog.title}</BlogTitle>
 
       <BlogInfo>
         <strong>URL:</strong>{' '}
-        <a
-          href={blog.url}
-          target="_blank"
-          rel="noreferrer"
-        >
+        <a href={blog.url} target="_blank" rel="noreferrer">
           {blog.url}
         </a>
       </BlogInfo>
 
       <BlogInfo>
-        <strong>Author:</strong>{' '}
-        {blog.author}
+        <strong>Author:</strong> {blog.author}
       </BlogInfo>
 
       <BlogInfo>
-        <strong>Likes:</strong>{' '}
-        {blog.likes}
-
-        <Button
-          onClick={handleLike}
-        >
-          like
-        </Button>
+        <strong>Likes:</strong> {blog.likes}
+        <Button onClick={handleLike}>like</Button>
       </BlogInfo>
 
       <BlogInfo>
-        <strong>Added by:</strong>{' '}
-        {blog.user.name}
+        <strong>Added by:</strong> {blog.user.name}
       </BlogInfo>
 
-      {user && (
-        <RemoveButton
-          onClick={handleRemove}
-        >
-          remove
-        </RemoveButton>
-      )}
+      {user && <RemoveButton onClick={handleRemove}>remove</RemoveButton>}
 
       <CommentsSection>
         <h3>comments</h3>
 
-        <CommentForm
-          onSubmit={handleComment}
-        >
+        <CommentForm onSubmit={handleComment}>
           <CommentInput
             value={newComment}
-            onChange={event =>
-              setNewComment(
-                event.target.value
-              )
-            }
+            onChange={(event) => setNewComment(event.target.value)}
             placeholder="write a comment"
             aria-label="comment"
           />
 
-          <Button type="submit">
-            add comment
-          </Button>
+          <Button type="submit">add comment</Button>
         </CommentForm>
 
-        {blog.comments &&
-        blog.comments.length > 0 ? (
+        {blog.comments && blog.comments.length > 0 ? (
           <CommentList>
-            {blog.comments.map(
-              (comment, index) => (
-                <Comment
-                  key={index}
-                >
-                  {comment}
-                </Comment>
-              )
-            )}
+            {blog.comments.map((comment, index) => (
+              <Comment key={index}>{comment}</Comment>
+            ))}
           </CommentList>
         ) : (
           <p>No comments yet.</p>

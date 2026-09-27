@@ -12,26 +12,20 @@ const useBlogStore = create((set) => ({
   createBlog: async (blog, token) => {
     const newBlog = await blogService.create(blog, token)
 
-    set(state => ({
-      blogs: state.blogs.concat(newBlog)
+    set((state) => ({
+      blogs: state.blogs.concat(newBlog),
     }))
 
     return newBlog
   },
 
   updateBlog: async (id, updatedBlog, token) => {
-    const returnedBlog = await blogService.update(
-      id,
-      updatedBlog,
-      token
-    )
+    const returnedBlog = await blogService.update(id, updatedBlog, token)
 
-    set(state => ({
-      blogs: state.blogs.map(blog =>
-        blog.id === returnedBlog.id
-          ? returnedBlog
-          : blog
-      )
+    set((state) => ({
+      blogs: state.blogs.map((blog) =>
+        blog.id === returnedBlog.id ? returnedBlog : blog,
+      ),
     }))
 
     return returnedBlog
@@ -43,24 +37,15 @@ const useBlogStore = create((set) => ({
       author: blog.author,
       url: blog.url,
       likes: blog.likes + 1,
-      user:
-        typeof blog.user === 'object'
-          ? blog.user.id
-          : blog.user
+      user: typeof blog.user === 'object' ? blog.user.id : blog.user,
     }
 
-    const returnedBlog = await blogService.update(
-      id,
-      updatedBlog,
-      token
-    )
+    const returnedBlog = await blogService.update(id, updatedBlog, token)
 
-    set(state => ({
-      blogs: state.blogs.map(blog =>
-        blog.id === returnedBlog.id
-          ? returnedBlog
-          : blog
-      )
+    set((state) => ({
+      blogs: state.blogs.map((blog) =>
+        blog.id === returnedBlog.id ? returnedBlog : blog,
+      ),
     }))
 
     return returnedBlog
@@ -69,12 +54,10 @@ const useBlogStore = create((set) => ({
   removeBlog: async (id, token) => {
     await blogService.remove(id, token)
 
-    set(state => ({
-      blogs: state.blogs.filter(
-        blog => blog.id !== id
-      )
+    set((state) => ({
+      blogs: state.blogs.filter((blog) => blog.id !== id),
     }))
-  }
+  },
 }))
 
 export default useBlogStore

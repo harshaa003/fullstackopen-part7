@@ -40,26 +40,15 @@ const Blog = ({ blog, likeBlog }) => {
   return (
     <BlogContainer className="blog">
       <div>
-        <BlogTitle
-          className="blog-title"
-          to={`/blogs/${blog.id}`}
-        >
+        <BlogTitle className="blog-title" to={`/blogs/${blog.id}`}>
           {blog.title}
         </BlogTitle>{' '}
-
-        <BlogAuthor className="blog-author">
-          {blog.author}
-        </BlogAuthor>
-
-        <ViewLink to={`/blogs/${blog.id}`}>
-          view
-        </ViewLink>
+        <BlogAuthor className="blog-author">{blog.author}</BlogAuthor>
+        <ViewLink to={`/blogs/${blog.id}`}>view</ViewLink>
       </div>
 
       <div style={{ marginTop: '12px' }}>
-        <span>
-          likes {blog.likes}
-        </span>
+        <span>likes {blog.likes}</span>
 
         <button
           onClick={() => likeBlog(blog)}
@@ -70,7 +59,7 @@ const Blog = ({ blog, likeBlog }) => {
             borderRadius: '5px',
             background: '#2563eb',
             color: 'white',
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
         >
           like

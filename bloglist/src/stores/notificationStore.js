@@ -7,22 +7,22 @@ const useNotificationStore = create((set) => ({
     set({
       notification: {
         message,
-        type
-      }
+        type,
+      },
     })
 
     setTimeout(() => {
       set({
-        notification: null
+        notification: null,
       })
     }, 5000)
   },
 
   clearNotification: () => {
     set({
-      notification: null
+      notification: null,
     })
-  }
+  },
 }))
 
 export default useNotificationStore

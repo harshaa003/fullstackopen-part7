@@ -1,8 +1,7 @@
 const storageKey = 'loggedBloglistUser'
 
 const getUser = () => {
-  const loggedUserJSON =
-    window.localStorage.getItem(storageKey)
+  const loggedUserJSON = window.localStorage.getItem(storageKey)
 
   if (!loggedUserJSON) {
     return null
@@ -11,11 +10,8 @@ const getUser = () => {
   return JSON.parse(loggedUserJSON)
 }
 
-const saveUser = user => {
-  window.localStorage.setItem(
-    storageKey,
-    JSON.stringify(user)
-  )
+const saveUser = (user) => {
+  window.localStorage.setItem(storageKey, JSON.stringify(user))
 }
 
 const removeUser = () => {
@@ -25,5 +21,5 @@ const removeUser = () => {
 export default {
   getUser,
   saveUser,
-  removeUser
+  removeUser,
 }

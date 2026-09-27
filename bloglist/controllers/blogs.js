@@ -8,7 +8,7 @@ blogsRouter.get('/', async (request, response, next) => {
   try {
     const blogs = await Blog.find({}).populate('user', {
       username: 1,
-      name: 1
+      name: 1,
     })
 
     response.json(blogs)
@@ -27,7 +27,7 @@ blogsRouter.post('/', userExtractor, async (request, response, next) => {
       author,
       url,
       likes: likes || 0,
-      user: request.user._id
+      user: request.user._id,
     })
 
     const savedBlog = await blog.save()
@@ -48,7 +48,7 @@ blogsRouter.put('/:id', userExtractor, async (request, response, next) => {
 
     if (!blog) {
       return response.status(404).json({
-        error: 'blog not found'
+        error: 'blog not found',
       })
     }
 
@@ -56,7 +56,7 @@ blogsRouter.put('/:id', userExtractor, async (request, response, next) => {
       title: request.body.title,
       author: request.body.author,
       url: request.body.url,
-      likes: request.body.likes
+      likes: request.body.likes,
     }
 
     const updatedBlog = await Blog.findByIdAndUpdate(
@@ -64,11 +64,11 @@ blogsRouter.put('/:id', userExtractor, async (request, response, next) => {
       updatedData,
       {
         new: true,
-        runValidators: true
-      }
+        runValidators: true,
+      },
     ).populate('user', {
       username: 1,
-      name: 1
+      name: 1,
     })
 
     response.json(updatedBlog)
@@ -84,26 +84,22 @@ blogsRouter.delete('/:id', userExtractor, async (request, response, next) => {
 
     if (!blog) {
       return response.status(404).json({
-        error: 'blog not found'
+        error: 'blog not found',
       })
     }
 
-    const blogOwnerUsername =
-      blog.user && blog.user.username
+    const blogOwnerUsername = blog.user && blog.user.username
 
-    const loggedUsername =
-      request.user.username
+    const loggedUsername = request.user.username
 
     const sameUser =
       blog.user &&
-      (
-        blog.user._id.toString() === request.user._id.toString() ||
-        blogOwnerUsername === loggedUsername
-      )
+      (blog.user._id.toString() === request.user._id.toString() ||
+        blogOwnerUsername === loggedUsername)
 
     if (!sameUser) {
       return response.status(403).json({
-        error: 'only the creator can delete the blog'
+        error: 'only the creator can delete the blog',
       })
     }
 
@@ -113,8 +109,7 @@ blogsRouter.delete('/:id', userExtractor, async (request, response, next) => {
 
     if (owner) {
       owner.blogs = owner.blogs.filter(
-        blogId =>
-          blogId.toString() !== request.params.id
+        (blogId) => blogId.toString() !== request.params.id,
       )
 
       await owner.save()
@@ -133,7 +128,7 @@ blogsRouter.post('/:id/comments', async (request, response, next) => {
 
     if (!blog) {
       return response.status(404).json({
-        error: 'blog not found'
+        error: 'blog not found',
       })
     }
 

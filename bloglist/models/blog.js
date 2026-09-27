@@ -19,9 +19,9 @@ const blogSchema = mongoose.Schema({
     ref: 'User',
   },
   comments: {
-  type: [String],
-  default: []
-}
+    type: [String],
+    default: [],
+  },
 })
 
 blogSchema.set('toJSON', {

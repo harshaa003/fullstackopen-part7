@@ -1,10 +1,5 @@
 import { useEffect, useState } from 'react'
-import {
-  Routes,
-  Route,
-  Link,
-  Navigate
-} from 'react-router-dom'
+import { Routes, Route, Link, Navigate } from 'react-router-dom'
 import styled from 'styled-components'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
@@ -145,7 +140,7 @@ const Users = () => {
   const [users, setUsers] = useState([])
 
   useEffect(() => {
-    axios.get('/api/users').then(response => {
+    axios.get('/api/users').then((response) => {
       setUsers(response.data)
     })
   }, [])
@@ -163,7 +158,7 @@ const Users = () => {
         </thead>
 
         <tbody>
-          {users.map(user => (
+          {users.map((user) => (
             <tr key={user.id}>
               <td>
                 <Link to={`/users/${user.id}`}>
@@ -171,11 +166,7 @@ const Users = () => {
                 </Link>
               </td>
 
-              <td>
-                {Array.isArray(user.blogs)
-                  ? user.blogs.length
-                  : 0}
-              </td>
+              <td>{Array.isArray(user.blogs) ? user.blogs.length : 0}</td>
             </tr>
           ))}
         </tbody>
@@ -183,12 +174,7 @@ const Users = () => {
     </div>
   )
 }
-const Login = ({
-  user,
-  username,
-  password,
-  handleLogin
-}) => {
+const Login = ({ user, username, password, handleLogin }) => {
   if (user) {
     return <Navigate to="/" />
   }
@@ -212,9 +198,7 @@ const Login = ({
           </Label>
         </FormRow>
 
-        <Button type="submit">
-          login
-        </Button>
+        <Button type="submit">login</Button>
       </form>
     </LoginForm>
   )
@@ -224,49 +208,27 @@ const App = () => {
   const username = useField('text')
   const password = useField('password')
 
-  const notification = useNotificationStore(
-    state => state.notification
-  )
+  const notification = useNotificationStore((state) => state.notification)
 
-  const setNotification = useNotificationStore(
-    state => state.setNotification
-  )
+  const setNotification = useNotificationStore((state) => state.setNotification)
 
-  const blogs = useBlogStore(
-    state => state.blogs
-  )
+  const blogs = useBlogStore((state) => state.blogs)
 
-  const initializeBlogs = useBlogStore(
-    state => state.initialize
-  )
+  const initializeBlogs = useBlogStore((state) => state.initialize)
 
-  const createBlog = useBlogStore(
-    state => state.createBlog
-  )
+  const createBlog = useBlogStore((state) => state.createBlog)
 
-  const updateBlog = useBlogStore(
-    state => state.updateBlog
-  )
+  const updateBlog = useBlogStore((state) => state.updateBlog)
 
-  const likeBlog = useBlogStore(
-    state => state.likeBlog
-  )
+  const likeBlog = useBlogStore((state) => state.likeBlog)
 
-  const removeBlog = useBlogStore(
-    state => state.removeBlog
-  )
+  const removeBlog = useBlogStore((state) => state.removeBlog)
 
-  const user = useUserStore(
-    state => state.user
-  )
+  const user = useUserStore((state) => state.user)
 
-  const setUser = useUserStore(
-    state => state.setUser
-  )
+  const setUser = useUserStore((state) => state.setUser)
 
-  const clearUser = useUserStore(
-    state => state.clearUser
-  )
+  const clearUser = useUserStore((state) => state.clearUser)
 
   useEffect(() => {
     initializeBlogs()
@@ -280,17 +242,14 @@ const App = () => {
     }
   }, [setUser])
 
-  const handleLogin = async event => {
+  const handleLogin = async (event) => {
     event.preventDefault()
 
     try {
-      const response = await axios.post(
-        '/api/login',
-        {
-          username: username.value,
-          password: password.value
-        }
-      )
+      const response = await axios.post('/api/login', {
+        username: username.value,
+        password: password.value,
+      })
 
       const loggedUser = response.data
 
@@ -301,16 +260,11 @@ const App = () => {
       password.reset()
 
       setNotification(
-        `Welcome ${
-          loggedUser.name || loggedUser.username
-        }`,
-        'success'
+        `Welcome ${loggedUser.name || loggedUser.username}`,
+        'success',
       )
     } catch {
-      setNotification(
-        'Wrong username or password',
-        'error'
-      )
+      setNotification('Wrong username or password', 'error')
     }
   }
 
@@ -318,95 +272,52 @@ const App = () => {
     persistentUser.removeUser()
     clearUser()
 
-    setNotification(
-      'Logged out successfully',
-      'success'
-    )
+    setNotification('Logged out successfully', 'success')
   }
 
-  const handleCreateBlog = async blog => {
+  const handleCreateBlog = async (blog) => {
     try {
-      const createdBlog = await createBlog(
-        blog,
-        user.token
-      )
+      const createdBlog = await createBlog(blog, user.token)
 
-      setNotification(
-        `a new blog ${createdBlog.title} added`,
-        'success'
-      )
+      setNotification(`a new blog ${createdBlog.title} added`, 'success')
 
       return createdBlog
     } catch {
-      setNotification(
-        'Adding the blog failed',
-        'error'
-      )
+      setNotification('Adding the blog failed', 'error')
 
       throw new Error('Adding blog failed')
     }
   }
 
-  const handleUpdateBlog = async (
-    updatedBlog,
-    id
-  ) => {
+  const handleUpdateBlog = async (updatedBlog, id) => {
     try {
-      return await updateBlog(
-        id,
-        updatedBlog,
-        user.token
-      )
+      return await updateBlog(id, updatedBlog, user.token)
     } catch {
-      setNotification(
-        'Updating the blog failed',
-        'error'
-      )
+      setNotification('Updating the blog failed', 'error')
 
       throw new Error('Updating blog failed')
     }
   }
 
-  const handleLikeBlog = async blog => {
+  const handleLikeBlog = async (blog) => {
     try {
-      await likeBlog(
-        blog.id,
-        blog,
-        user.token
-      )
+      await likeBlog(blog.id, blog, user.token)
 
-      setNotification(
-        'Blog liked',
-        'success'
-      )
+      setNotification('Blog liked', 'success')
     } catch {
-      setNotification(
-        'Liking the blog failed',
-        'error'
-      )
+      setNotification('Liking the blog failed', 'error')
     }
   }
 
-  const handleRemoveBlog = async id => {
+  const handleRemoveBlog = async (id) => {
     try {
-      await removeBlog(
-        id,
-        user.token
-      )
+      await removeBlog(id, user.token)
 
-      setNotification(
-        'Blog removed successfully',
-        'success'
-      )
+      setNotification('Blog removed successfully', 'success')
     } catch {
-      setNotification(
-        'Removing the blog failed',
-        'error'
-      )
+      setNotification('Removing the blog failed', 'error')
 
-      throw new Error(
-        'Removing blog failed'
-      )
+      throw new Error('Removing blog failed')
     }
   }
 
@@ -416,16 +327,9 @@ const App = () => {
 
       {blogs
         .slice()
-        .sort(
-          (a, b) =>
-            b.likes - a.likes
-        )
-        .map(blog => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            likeBlog={handleLikeBlog}
-          />
+        .sort((a, b) => b.likes - a.likes)
+        .map((blog) => (
+          <Blog key={blog.id} blog={blog} likeBlog={handleLikeBlog} />
         ))}
     </div>
   )
@@ -435,72 +339,39 @@ const App = () => {
       return <Navigate to="/login" />
     }
 
-    return (
-      <BlogForm
-        createBlog={handleCreateBlog}
-      />
-    )
+    return <BlogForm createBlog={handleCreateBlog} />
   }
 
   return (
     <Page>
       <Navigation>
-        <Link to="/">
-          blogs
-        </Link>
+        <Link to="/">blogs</Link>
 
-        <Link to="/users">
-          users
-        </Link>
+        <Link to="/users">users</Link>
 
-        {!user && (
-          <Link to="/login">
-            login
-          </Link>
-        )}
+        {!user && <Link to="/login">login</Link>}
 
         {user && (
           <>
-            <Link to="/create">
-              new blog
-            </Link>
+            <Link to="/create">new blog</Link>
 
-            <UserInfo>
-              {user.name ||
-                user.username}{' '}
-              logged in
-            </UserInfo>
+            <UserInfo>{user.name || user.username} logged in</UserInfo>
 
-            <button onClick={handleLogout}>
-              logout
-            </button>
+            <button onClick={handleLogout}>logout</button>
           </>
         )}
       </Navigation>
 
-      {notification && (
-        <Notification>
-          {notification.message}
-        </Notification>
-      )}
+      {notification && <Notification>{notification.message}</Notification>}
 
       <Main>
         <ErrorBoundary>
           <Routes>
-            <Route
-              path="/"
-              element={<Blogs />}
-            />
+            <Route path="/" element={<Blogs />} />
 
-            <Route
-              path="/users"
-              element={<Users />}
-            />
+            <Route path="/users" element={<Users />} />
 
-            <Route
-              path="/users/:id"
-              element={<UserView />}
-            />
+            <Route path="/users/:id" element={<UserView />} />
 
             <Route
               path="/login"
@@ -514,10 +385,7 @@ const App = () => {
               }
             />
 
-            <Route
-              path="/create"
-              element={<Create />}
-            />
+            <Route path="/create" element={<Create />} />
 
             <Route
               path="/blogs/:id"
@@ -532,14 +400,7 @@ const App = () => {
               }
             />
 
-            <Route
-              path="*"
-              element={
-                <h2>
-                  Page not found
-                </h2>
-              }
-            />
+            <Route path="*" element={<h2>Page not found</h2>} />
           </Routes>
         </ErrorBoundary>
       </Main>
