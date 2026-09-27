@@ -10,8 +10,7 @@ jobs:
 
     env:
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
-        SECRET: ${{ secrets.SECRET }}
-
+      SECRET: ${{ secrets.SECRET }}
       PORT: 3001
 
     steps:
